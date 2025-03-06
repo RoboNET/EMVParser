@@ -10,9 +10,10 @@ public static partial class EMVTLVParser
     public static IReadOnlyList<TagPointerReadonly> ParseTagsList(ReadOnlyMemory<byte> data)
     {
         var slice = data;
-
+        
+#nullable enable
         var pointers = new List<TagPointerReadonly>();
-
+#nullable disable
         while (!slice.IsEmpty)
         {
             var tagRange = ParseTagRange(slice, out var skipBytes, out var dataType, out var classType);

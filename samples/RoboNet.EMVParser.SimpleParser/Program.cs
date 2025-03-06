@@ -18,7 +18,9 @@ foreach (var tag in tagsList)
 void WriteTag(TagPointer tag, int offset)
 {
     var offsetString = new string('-', offset * 2) + " ";
-    Console.WriteLine(offsetString + "TAG:" + tag.Tag);
+    var tagName = EMVTags.GetTagName(tag.Tag);
+    Console.WriteLine(offsetString + "TAG:" + tag.Tag + (tagName != null ? " (NAME:" + tagName +")" : ""));
+
     if (tag.InternalTags.Count > 0)
     {
         Console.WriteLine(offsetString + "Internal tags:");

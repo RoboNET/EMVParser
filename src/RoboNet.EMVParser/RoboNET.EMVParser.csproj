@@ -8,7 +8,7 @@
         <IsPackable>true</IsPackable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <PackageId>RoboNet.EMVParser</PackageId>
-        <Version>0.2.0</Version>
+        <Version>0.2.1</Version>
         <Authors>RoboNet</Authors>
         <RepositoryUrl>https://github.com/RoboNET/EMVParser.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -21,6 +21,11 @@
         <NoWarn>$(NoWarn);1591</NoWarn>
     </PropertyGroup>
 
+    <ItemGroup>
+        <AdditionalFiles Include="well-known-tags.txt" />
+        <ProjectReference Include="..\RoboNet.EMVParser.SourceGenerators\RoboNet.EMVParser.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+    </ItemGroup>
+    
     <ItemGroup>
         <None Update="EMVTLVParser.Template.tt">
             <Generator>TextTemplatingFileGenerator</Generator>
@@ -53,5 +58,4 @@
         <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
         <None Include="..\..\LICENSE.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
-
 </Project>
