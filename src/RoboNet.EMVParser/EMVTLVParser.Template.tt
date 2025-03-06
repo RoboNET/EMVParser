@@ -1,0 +1,73 @@
+<#@ template language="C#" #>
+<#@ import namespace="System.Collections.Generic" #>
+namespace RoboNET.EMVParser;
+
+public static partial class EMVTLVParser
+{
+<#
+    var types = new List<string>()
+    {
+        "ReadOnlySpan",
+        "Span",
+        "ReadOnlyMemory",
+        "Memory"
+    };
+#>
+
+<#
+    foreach (var type in types)
+    {
+#>
+    /// <summary>
+    /// Get list of TLV from binary list
+    /// </summary>
+    /// <param name="data">Bytes of TLV</param>
+    /// <param name="tagKey">Bytes of Tag</param>
+    /// <returns>Value of specified tag or empty data</returns>
+    public static <#= type #><byte> ReadTagValue(<#= type #><byte> data, byte[] tagKey)
+    {
+        var slice = data;
+    
+        while (!slice.IsEmpty)
+        {
+            var tagRange = ParseTagRange(slice, out var skipBytes, out var dataType, out var classType);
+            var length = ParseTagLength(slice.Slice(skipBytes), out var lengthSkipByts);
+    
+            var tagRangeData = tagRange.GetOffsetAndLength(slice.Length);
+            var tag = slice.Slice(tagRangeData.Offset, tagRangeData.Length); 
+            
+            if (dataType == DataType.ConstructedDataObject)
+            {
+                var value = slice.Slice(skipBytes + lengthSkipByts, length);
+                var internalTag = ReadTagValue(value, tagKey);
+                if (!internalTag.IsEmpty)
+                    return internalTag;
+            }
+    
+            if (tag<#= type.EndsWith("Memory") ? ".Span" : "" #>.SequenceEqual(tagKey))
+            {
+                return slice.Slice(skipBytes + lengthSkipByts, length);
+            }
+    
+            slice = slice.Slice(skipBytes + lengthSkipByts + length);
+        }
+    
+        return Array.Empty<byte>();
+    }
+
+    /// <summary>
+    /// Get list of TLV from binary list
+    /// </summary>
+    /// <param name="data">Bytes of TLV</param>
+    /// <param name="tagKey">Tag name</param>
+    /// <returns>Value of specified tag or empty data</returns>
+    public static <#= type #><byte> ReadTagValue(<#= type #><byte> data, string tagKey)
+    {
+        var comparer = Convert.FromHexString(tagKey);
+        return ReadTagValue(data, comparer);
+    }
+
+<#
+    }
+#>
+}
