@@ -7,7 +7,7 @@ public static partial class EMVTLVParser
     /// </summary>
     /// <param name="data">Bytes of TLV</param>
     /// <returns>List of TLV tags</returns>
-    public static List<TagPointerReadonly> ParseTagsList(ReadOnlyMemory<byte> data)
+    public static IReadOnlyList<TagPointerReadonly> ParseTagsList(ReadOnlyMemory<byte> data)
     {
         var slice = data;
 
@@ -19,8 +19,8 @@ public static partial class EMVTLVParser
             var length = ParseTagLength(slice.Slice(skipBytes), out var lengthSkipByts);
             var value = slice.Slice(skipBytes + lengthSkipByts, length);
 
-            List<TagPointerReadonly> internalTags = dataType == DataType.PrimitiveDataObject
-                ? new()
+            IReadOnlyList<TagPointerReadonly> internalTags = dataType == DataType.PrimitiveDataObject
+                ? new List<TagPointerReadonly>()
                 : ParseTagsList(value);
 
             var tagData = tagRange.GetOffsetAndLength(slice.Length);
@@ -45,7 +45,7 @@ public static partial class EMVTLVParser
     /// </summary>
     /// <param name="data">Bytes of TLV</param>
     /// <returns>List of TLV tags</returns>
-    public static List<TagPointer> ParseTagsList(Memory<byte> data)
+    public static IReadOnlyList<TagPointer> ParseTagsList(Memory<byte> data)
     {
         var slice = data;
 
@@ -57,8 +57,8 @@ public static partial class EMVTLVParser
             var length = ParseTagLength(slice.Slice(skipBytes), out var lengthSkipByts);
             var value = slice.Slice(skipBytes + lengthSkipByts, length);
 
-            List<TagPointer> internalTags = dataType == DataType.PrimitiveDataObject
-                ? new()
+            IReadOnlyList<TagPointer> internalTags = dataType == DataType.PrimitiveDataObject
+                ? new List<TagPointer>()
                 : ParseTagsList(value);
 
             var tagData = tagRange.GetOffsetAndLength(slice.Length);

@@ -23,12 +23,12 @@ public class TagPointer
     /// <summary>
     /// Tag part in HEX
     /// </summary>
-    public string Tag => System.Convert.ToBase64String(TagData.Span);
+    public string Tag => Convert.ToHexString(TagData.Span);
     
     /// <summary>
     /// Value part in HEX
     /// </summary>
-    public string Value => System.Convert.ToBase64String(TagData.Span);
+    public string Value => Convert.ToHexString(ValueData.Span);
     
     /// <summary>
     /// Length
@@ -38,7 +38,7 @@ public class TagPointer
     /// <summary>
     /// If tag is constructed data type, contains internal tags
     /// </summary>
-    public required List<TagPointer> InternalTags { get; init; } = new();
+    public required IReadOnlyList<TagPointer> InternalTags { get; init; } = new List<TagPointer>();
 
     public override string ToString()
     {

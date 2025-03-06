@@ -18,7 +18,7 @@ foreach (var tag in tagsList)
 void WriteTag(TagPointer tag, int offset)
 {
     var offsetString = new string('-', offset * 2) + " ";
-    Console.WriteLine(offsetString + "TAG:" + Convert.ToHexString(tag.TagData.Span));
+    Console.WriteLine(offsetString + "TAG:" + tag.Tag);
     if (tag.InternalTags.Count > 0)
     {
         Console.WriteLine(offsetString + "Internal tags:");
@@ -29,6 +29,6 @@ void WriteTag(TagPointer tag, int offset)
     }
     else
     {
-        Console.WriteLine(offsetString + "VALUE:" + Convert.ToHexString(tag.ValueData.Span));
+        Console.WriteLine(offsetString + "VALUE:" + tag.Value);
     }
 }

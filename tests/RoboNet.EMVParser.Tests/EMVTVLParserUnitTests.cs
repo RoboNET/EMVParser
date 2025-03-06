@@ -53,8 +53,7 @@ public class EMVTVLParserUnitTests
         _ = EMVTLVParser.ParseTagRange(data, out int bytes, out _, out _);
 
         var tagLength = EMVTLVParser.ParseTagLength(data.Slice(bytes), out bytes);
-
-
+        
         Assert.Equal(expectedlength, tagLength);
         Assert.Equal(expectedBytes, bytes);
     }
@@ -75,9 +74,12 @@ public class EMVTVLParserUnitTests
 
         var result = EMVTLVParser.ParseTagsList(data);
 
-        var tag = result.FirstOrDefault(t => Convert.ToHexString(t.TagData.Span) == expectedTag);
+        var tag = result.FirstOrDefault(t => string.Equals(t.Tag, expectedTag, StringComparison.Ordinal));
         Assert.NotNull(tag);
+        Assert.Equal(expectedTag, Convert.ToHexString(tag.TagData.Span));
+
         Assert.Equal(expectedValue, Convert.ToHexString(tag.ValueData.Span));
+        Assert.Equal(expectedValue, tag.Value);
     }
     
     [Theory]
