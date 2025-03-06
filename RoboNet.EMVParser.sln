@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoboNet.EMVParser", "src\RoboNet.EMVParser\RoboNet.EMVParser.csproj", "{C9D1C81F-C6BF-4486-ADB1-6F7A539FBDD2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoboNet.EMVParser.Tests", "tests\RoboNet.EMVParser.Tests\RoboNet.EMVParser.Tests.csproj", "{27D72CBF-1D49-4F43-AAD7-EBAB33AFC4BD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{63C7710A-E13F-4E32-9280-8303E47F63C6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{18BB2A26-91C4-4AFA-8D4A-4C14738E022C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{3A066533-942F-4BB4-91BE-9AA7EB6E5132}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoboNet.EMVParser.SimpleParser", "samples\RoboNet.EMVParser.SimpleParser\RoboNet.EMVParser.SimpleParser.csproj", "{49F72372-A319-4D01-8D55-CBAE47A2EA2C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoboNet.EMVParser.SourceGenerators", "src\RoboNet.EMVParser.SourceGenerators\RoboNet.EMVParser.SourceGenerators.csproj", "{5D5C0D74-AD28-462B-9D21-6099BF9CD601}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C9D1C81F-C6BF-4486-ADB1-6F7A539FBDD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9D1C81F-C6BF-4486-ADB1-6F7A539FBDD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9D1C81F-C6BF-4486-ADB1-6F7A539FBDD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9D1C81F-C6BF-4486-ADB1-6F7A539FBDD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27D72CBF-1D49-4F43-AAD7-EBAB33AFC4BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27D72CBF-1D49-4F43-AAD7-EBAB33AFC4BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27D72CBF-1D49-4F43-AAD7-EBAB33AFC4BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27D72CBF-1D49-4F43-AAD7-EBAB33AFC4BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49F72372-A319-4D01-8D55-CBAE47A2EA2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49F72372-A319-4D01-8D55-CBAE47A2EA2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49F72372-A319-4D01-8D55-CBAE47A2EA2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49F72372-A319-4D01-8D55-CBAE47A2EA2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D5C0D74-AD28-462B-9D21-6099BF9CD601}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D5C0D74-AD28-462B-9D21-6099BF9CD601}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D5C0D74-AD28-462B-9D21-6099BF9CD601}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D5C0D74-AD28-462B-9D21-6099BF9CD601}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C9D1C81F-C6BF-4486-ADB1-6F7A539FBDD2} = {63C7710A-E13F-4E32-9280-8303E47F63C6}
+		{27D72CBF-1D49-4F43-AAD7-EBAB33AFC4BD} = {18BB2A26-91C4-4AFA-8D4A-4C14738E022C}
+		{49F72372-A319-4D01-8D55-CBAE47A2EA2C} = {3A066533-942F-4BB4-91BE-9AA7EB6E5132}
+		{5D5C0D74-AD28-462B-9D21-6099BF9CD601} = {63C7710A-E13F-4E32-9280-8303E47F63C6}
+	EndGlobalSection
+EndGlobal

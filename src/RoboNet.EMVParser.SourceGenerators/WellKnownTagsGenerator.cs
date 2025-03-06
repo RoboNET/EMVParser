@@ -5,10 +5,10 @@ using System.Text.Json;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
-namespace RoboNET.EMVParser.SourceGenerators;
+namespace RoboNet.EMVParser.SourceGenerators;
 
 [Generator]
-public class SampleGenerator : IIncrementalGenerator
+public class WellKnownTagsGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext initContext)
     {
