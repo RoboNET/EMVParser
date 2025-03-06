@@ -1,6 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using RoboNET.EMVParser;
+using RoboNet.EMVParser;
 
 Console.WriteLine("Enter emv tags in HEX");
 

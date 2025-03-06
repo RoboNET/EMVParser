@@ -1,4 +1,4 @@
-﻿namespace RoboNET.EMVParser;
+﻿namespace RoboNet.EMVParser;
 
 public static partial class EMVTLVParser
 {

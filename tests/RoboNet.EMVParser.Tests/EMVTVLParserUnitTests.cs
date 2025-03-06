@@ -1,4 +1,6 @@
-﻿namespace RoboNET.EMVParser.Tests;
+﻿using RoboNet.EMVParser;
+
+namespace RoboNet.EMVParser.Tests;
 
 public class EMVTVLParserUnitTests
 {

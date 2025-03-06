@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace RoboNET.EMVParser;
+namespace RoboNet.EMVParser;
 
 [DebuggerDisplay("{DebugText}")]
 public class TagPointer

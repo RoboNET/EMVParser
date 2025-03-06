@@ -1,6 +1,6 @@
 <#@ template language="C#" #>
 <#@ import namespace="System.Collections.Generic" #>
-namespace RoboNET.EMVParser;
+namespace RoboNet.EMVParser;
 
 public static partial class EMVTLVParser
 {

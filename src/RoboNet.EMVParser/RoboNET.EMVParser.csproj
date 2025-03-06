@@ -2,13 +2,13 @@
 
     <PropertyGroup>
         <TargetFrameworks>net5.0;net8.0;netstandard2.1</TargetFrameworks>
-        <LangVersion>12</LangVersion>
+        <LangVersion>13</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>true</IsPackable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <PackageId>RoboNet.EMVParser</PackageId>
-        <Version>0.2.1</Version>
+        <Version>0.2.2</Version>
         <Authors>Mikhail Korolev (RoboNet)</Authors>
         <RepositoryUrl>https://github.com/RoboNET/EMVParser.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>

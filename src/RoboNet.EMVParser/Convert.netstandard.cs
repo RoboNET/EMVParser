@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 #if NETSTANDARD2_1
 
-namespace RoboNET.EMVParser;
+namespace RoboNet.EMVParser;
 
 public static class Convert
 {
