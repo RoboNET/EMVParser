@@ -80,7 +80,7 @@ public static partial class EMVTLVParser
 
 
             spc.AddSource(
-                $"EMVTLVParser_{methodDeclarationSyntax.ParameterList.ToString()
+                $"EMVTLVParser_{methodDeclarationSyntax.Identifier}_{methodDeclarationSyntax.ParameterList.ToString()
                     .Replace(" ", "")
                     .Replace(",", "")
                     .Replace("[", "").Replace("]", "")

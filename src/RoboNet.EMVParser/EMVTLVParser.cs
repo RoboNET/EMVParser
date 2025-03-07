@@ -9,7 +9,7 @@ public static partial class EMVTLVParser
     /// <param name="tagKey">Bytes of Tag</param>
     /// <returns>Value of specified tag or empty data</returns>
     [ReadTagValueGeneration]
-    public static Memory<byte> ReadTagValue(Memory<byte> data, byte[] tagKey)
+    public static Memory<byte> GetTagValue(Memory<byte> data, byte[] tagKey)
     {
         var slice = data;
     
@@ -24,7 +24,7 @@ public static partial class EMVTLVParser
             if (dataType == DataType.ConstructedDataObject)
             {
                 var value = slice.Slice(skipBytes + lengthSkipByts, length);
-                var internalTag = ReadTagValue(value, tagKey);
+                var internalTag = GetTagValue(value, tagKey);
                 if (!internalTag.IsEmpty)
                     return internalTag;
             }
@@ -47,10 +47,60 @@ public static partial class EMVTLVParser
     /// <param name="tagKey">Tag name</param>
     /// <returns>Value of specified tag or empty data</returns>
     [ReadTagValueGeneration]
-    public static Memory<byte> ReadTagValue(Memory<byte> data, string tagKey)
+    public static Memory<byte> GetTagValue(Memory<byte> data, string tagKey)
     {
         var comparer = Convert.FromHexString(tagKey);
-        return ReadTagValue(data, comparer);
+        return GetTagValue(data, comparer);
+    }
+    
+    /// <summary>
+    /// Get value in HEX of specified tag from TLV data
+    /// </summary>
+    /// <param name="data">Bytes of TLV</param>
+    /// <param name="tagKey">Tag name</param>
+    /// <returns>Value of specified tag or empty data</returns>
+    [ReadTagValueGeneration]
+    public static string GetHexTagValue(Memory<byte> data, string tagKey)
+    {
+        var comparer = Convert.FromHexString(tagKey);
+        var result = GetTagValue(data, comparer);
+        if(result.IsEmpty)
+            return string.Empty;
+        
+        return Convert.ToHexString(result.Span);
+    }
+    
+    /// <summary>
+    /// Get value in HEX of specified tag from TLV data
+    /// </summary>
+    /// <param name="data">Bytes of TLV</param>
+    /// <param name="tagKey">Tag name</param>
+    /// <returns>Value of specified tag or empty data</returns>
+    public static string GetHexTagValue(byte[] data, string tagKey)
+    {
+        return GetHexTagValue(data.AsSpan(), tagKey);
+    }
+    
+    /// <summary>
+    /// Get value in HEX of specified tag from TLV data
+    /// </summary>
+    /// <param name="data">TLV in HEX</param>
+    /// <param name="tagKey">Tag name</param>
+    /// <returns>Value of specified tag or empty data</returns>
+    public static string GetHexTagValue(string data, string tagKey)
+    {
+        return GetHexTagValue(Convert.FromHexString(data), tagKey);
+    }
+    
+    /// <summary>
+    /// Get value of specified tag from TLV data
+    /// </summary>
+    /// <param name="data">Bytes of TLV</param>
+    /// <param name="tagKey">Tag name</param>
+    /// <returns>Value of specified tag or empty data</returns>
+    public static Span<byte> GetTagValue(byte[] data, string tagKey)
+    {
+        return GetTagValue(data.AsSpan(), tagKey);
     }
     
     /// <summary>

@@ -131,7 +131,7 @@ public class EMVTVLParserUnitTests
     {
         var data = Convert.FromHexString(sample).AsMemory();
 
-        var result = EMVTLVParser.ReadTagValue(data, expectedTag);
+        var result = EMVTLVParser.GetTagValue(data, expectedTag);
 
         Assert.Equal(expectedValue, Convert.ToHexString(result.Span));
     }
@@ -155,7 +155,7 @@ public class EMVTVLParserUnitTests
     {
         var data = new ReadOnlyMemory<byte>(Convert.FromHexString(sample));
 
-        var result = EMVTLVParser.ReadTagValue(data, expectedTag);
+        var result = EMVTLVParser.GetTagValue(data, expectedTag);
 
         Assert.Equal(expectedValue, Convert.ToHexString(result.Span));
     }
@@ -179,7 +179,7 @@ public class EMVTVLParserUnitTests
     {
         var data = new Span<byte>(Convert.FromHexString(sample));
 
-        var result = EMVTLVParser.ReadTagValue(data, expectedTag);
+        var result = EMVTLVParser.GetTagValue(data, expectedTag);
 
         Assert.Equal(expectedValue, Convert.ToHexString(result));
     }
@@ -203,7 +203,7 @@ public class EMVTVLParserUnitTests
     {
         var data = new ReadOnlySpan<byte>(Convert.FromHexString(sample));
 
-        var result = EMVTLVParser.ReadTagValue(data, expectedTag);
+        var result = EMVTLVParser.GetTagValue(data, expectedTag);
 
         Assert.Equal(expectedValue, Convert.ToHexString(result));
     }
