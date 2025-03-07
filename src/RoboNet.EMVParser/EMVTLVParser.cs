@@ -3,6 +3,57 @@ namespace RoboNet.EMVParser;
 public static partial class EMVTLVParser
 {
     /// <summary>
+    /// Get value of specified tag from TLV data
+    /// </summary>
+    /// <param name="data">Bytes of TLV</param>
+    /// <param name="tagKey">Bytes of Tag</param>
+    /// <returns>Value of specified tag or empty data</returns>
+    [ReadTagValueGeneration]
+    public static Memory<byte> ReadTagValue(Memory<byte> data, byte[] tagKey)
+    {
+        var slice = data;
+    
+        while (!slice.IsEmpty)
+        {
+            var tagRange = ParseTagRange(slice, out var skipBytes, out var dataType, out _);
+            var length = ParseTagLength(slice.Slice(skipBytes), out var lengthSkipByts);
+    
+            var tagRangeData = tagRange.GetOffsetAndLength(slice.Length);
+            var tag = slice.Slice(tagRangeData.Offset, tagRangeData.Length); 
+            
+            if (dataType == DataType.ConstructedDataObject)
+            {
+                var value = slice.Slice(skipBytes + lengthSkipByts, length);
+                var internalTag = ReadTagValue(value, tagKey);
+                if (!internalTag.IsEmpty)
+                    return internalTag;
+            }
+    
+            if (tag.Span.SequenceEqual(tagKey))
+            {
+                return slice.Slice(skipBytes + lengthSkipByts, length);
+            }
+    
+            slice = slice.Slice(skipBytes + lengthSkipByts + length);
+        }
+        
+        return Array.Empty<byte>();
+    }
+
+    /// <summary>
+    /// Get value of specified tag from TLV data
+    /// </summary>
+    /// <param name="data">Bytes of TLV</param>
+    /// <param name="tagKey">Tag name</param>
+    /// <returns>Value of specified tag or empty data</returns>
+    [ReadTagValueGeneration]
+    public static Memory<byte> ReadTagValue(Memory<byte> data, string tagKey)
+    {
+        var comparer = Convert.FromHexString(tagKey);
+        return ReadTagValue(data, comparer);
+    }
+    
+    /// <summary>
     /// Get list of TLV from binary list
     /// </summary>
     /// <param name="data">Bytes of TLV</param>
@@ -11,9 +62,7 @@ public static partial class EMVTLVParser
     {
         var slice = data;
         
-#nullable enable
         var pointers = new List<TagPointerReadonly>();
-#nullable disable
         while (!slice.IsEmpty)
         {
             var tagRange = ParseTagRange(slice, out var skipBytes, out var dataType, out var classType);
@@ -32,7 +81,9 @@ public static partial class EMVTLVParser
                 TagData = slice.Slice(tagData.Offset, tagData.Length),
                 ValueData = value,
                 Length = length,
-                InternalTags = internalTags
+                InternalTags = internalTags,
+                TagDataType = dataType,
+                TagClassType = classType
             });
 
             slice = slice.Slice(skipBytes + lengthSkipByts + length);
@@ -69,7 +120,9 @@ public static partial class EMVTLVParser
                 TagData = slice.Slice(tagData.Offset, tagData.Length),
                 ValueData = value,
                 Length = length,
-                InternalTags = internalTags
+                InternalTags = internalTags,
+                TagDataType = dataType,
+                TagClassType = classType
             });
 
             slice = slice.Slice(skipBytes + lengthSkipByts + length);
@@ -97,18 +150,18 @@ public static partial class EMVTLVParser
         }
         else
         {
-            var lendthSize =
+            var lengthSize =
                 ((byte)(firstLengthByte << 1)) >> 1; //Remove 1 bit from left
 
-            skipBytes = 1 + lendthSize;
+            skipBytes = 1 + lengthSize;
             var arr = new byte[4];
-
-            for (int i = 0; i < lendthSize; i++)
+            
+            for (int i = 0; i < lengthSize; i++)
             {
                 arr[i] = data[1 + i];
             }
 
-            data.Slice(1, lendthSize).ToArray();
+            data.Slice(1, lengthSize).ToArray();
 
             return BitConverter.ToInt32(arr);
         }

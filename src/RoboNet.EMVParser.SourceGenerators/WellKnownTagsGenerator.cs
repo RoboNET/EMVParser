@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Text.Json;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
@@ -12,21 +10,15 @@ public class WellKnownTagsGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext initContext)
     {
-        // define the execution pipeline here via a series of transformations:
-
-        // find all additional files that end with .txt
         IncrementalValuesProvider<AdditionalText> textFiles =
-            initContext.AdditionalTextsProvider.Where(file => file.Path.EndsWith("well-known-tags.txt"));
+            initContext.AdditionalTextsProvider.Where(static file => file.Path.EndsWith("well-known-tags.txt"));
 
-        // read their contents and save their name
         IncrementalValuesProvider<(string name, string content)> namesAndContents =
             textFiles.Select((text, cancellationToken) => (name: Path.GetFileNameWithoutExtension(text.Path),
                 content: text.GetText(cancellationToken)!.ToString()));
 
-        // generate a class that contains their values as const strings
         initContext.RegisterSourceOutput(namesAndContents, (spc, nameAndContent) =>
         {
-            Dictionary<string, int> processedTags = new Dictionary<string, int>();
             StringBuilder builder = new StringBuilder();
 
             StringBuilder tagNamesBuilder = new StringBuilder();
@@ -50,7 +42,7 @@ public class WellKnownTagsGenerator : IIncrementalGenerator
 
                 var tagName = parts[1].Trim('"').Trim().Replace(" ", "").Replace(",", "").Replace("-", "")
                     .Replace("–", "").Replace("(", "").Replace(")", "");
-                
+
                 builder.AppendLine(
                     $"        public readonly static string {tagName} = \"{parts[0].Trim('"').Trim()}\";");
             }
@@ -64,7 +56,7 @@ public class WellKnownTagsGenerator : IIncrementalGenerator
     {{
         private static Dictionary<string, string> tags = new Dictionary<string, string>()
         {{
-            {tagNamesBuilder.ToString()}
+            {tagNamesBuilder}
         }};
 
         public static string? GetTagName(string tag)
@@ -76,7 +68,7 @@ public class WellKnownTagsGenerator : IIncrementalGenerator
             return null;
         }}
 
-{builder.ToString()}
+{builder}
     }}
 #nullable disable", Encoding.UTF8));
         });
