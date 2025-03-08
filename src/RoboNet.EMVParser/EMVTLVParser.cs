@@ -8,19 +8,19 @@ public static partial class EMVTLVParser
     /// <param name="data">Bytes of TLV</param>
     /// <param name="tagKey">Bytes of Tag</param>
     /// <returns>Value of specified tag or empty data</returns>
-    [ReadTagValueGeneration]
+    [MemoryVariantMethodGenerator]
     public static Memory<byte> GetTagValue(Memory<byte> data, byte[] tagKey)
     {
         var slice = data;
-    
+
         while (!slice.IsEmpty)
         {
             var tagRange = ParseTagRange(slice, out var skipBytes, out var dataType, out _);
             var length = ParseTagLength(slice.Slice(skipBytes), out var lengthSkipByts);
-    
+
             var tagRangeData = tagRange.GetOffsetAndLength(slice.Length);
-            var tag = slice.Slice(tagRangeData.Offset, tagRangeData.Length); 
-            
+            var tag = slice.Slice(tagRangeData.Offset, tagRangeData.Length);
+
             if (dataType == DataType.ConstructedDataObject)
             {
                 var value = slice.Slice(skipBytes + lengthSkipByts, length);
@@ -28,15 +28,15 @@ public static partial class EMVTLVParser
                 if (!internalTag.IsEmpty)
                     return internalTag;
             }
-    
+
             if (tag.Span.SequenceEqual(tagKey))
             {
                 return slice.Slice(skipBytes + lengthSkipByts, length);
             }
-    
+
             slice = slice.Slice(skipBytes + lengthSkipByts + length);
         }
-        
+
         return Array.Empty<byte>();
     }
 
@@ -46,30 +46,30 @@ public static partial class EMVTLVParser
     /// <param name="data">Bytes of TLV</param>
     /// <param name="tagKey">Tag name</param>
     /// <returns>Value of specified tag or empty data</returns>
-    [ReadTagValueGeneration]
+    [MemoryVariantMethodGenerator]
     public static Memory<byte> GetTagValue(Memory<byte> data, string tagKey)
     {
         var comparer = Convert.FromHexString(tagKey);
         return GetTagValue(data, comparer);
     }
-    
+
     /// <summary>
     /// Get value in HEX of specified tag from TLV data
     /// </summary>
     /// <param name="data">Bytes of TLV</param>
     /// <param name="tagKey">Tag name</param>
     /// <returns>Value of specified tag or empty data</returns>
-    [ReadTagValueGeneration]
+    [MemoryVariantMethodGenerator]
     public static string GetHexTagValue(Memory<byte> data, string tagKey)
     {
         var comparer = Convert.FromHexString(tagKey);
         var result = GetTagValue(data, comparer);
-        if(result.IsEmpty)
+        if (result.IsEmpty)
             return string.Empty;
-        
+
         return Convert.ToHexString(result.Span);
     }
-    
+
     /// <summary>
     /// Get value in HEX of specified tag from TLV data
     /// </summary>
@@ -80,7 +80,7 @@ public static partial class EMVTLVParser
     {
         return GetHexTagValue(data.AsSpan(), tagKey);
     }
-    
+
     /// <summary>
     /// Get value in HEX of specified tag from TLV data
     /// </summary>
@@ -91,7 +91,7 @@ public static partial class EMVTLVParser
     {
         return GetHexTagValue(Convert.FromHexString(data), tagKey);
     }
-    
+
     /// <summary>
     /// Get value of specified tag from TLV data
     /// </summary>
@@ -102,7 +102,7 @@ public static partial class EMVTLVParser
     {
         return GetTagValue(data.AsSpan(), tagKey);
     }
-    
+
     /// <summary>
     /// Get list of TLV from binary list
     /// </summary>
@@ -111,7 +111,7 @@ public static partial class EMVTLVParser
     public static IReadOnlyList<TagPointerReadonly> ParseTagsList(ReadOnlyMemory<byte> data)
     {
         var slice = data;
-        
+
         var pointers = new List<TagPointerReadonly>();
         while (!slice.IsEmpty)
         {
@@ -205,7 +205,7 @@ public static partial class EMVTLVParser
 
             skipBytes = 1 + lengthSize;
             var arr = new byte[4];
-            
+
             for (int i = 0; i < lengthSize; i++)
             {
                 arr[i] = data[1 + i];
