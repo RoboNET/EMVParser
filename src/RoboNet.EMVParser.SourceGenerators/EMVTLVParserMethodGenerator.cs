@@ -104,6 +104,7 @@ namespace RoboNet.EMVParser
             var classText = $@"
 namespace RoboNet.EMVParser;
 
+#nullable enable
 public static partial class EMVTLVParser
 {{
     {(generationMode.HasFlag(MemoryVariantGeneration.Memory) ? commentText : "")}
@@ -114,7 +115,8 @@ public static partial class EMVTLVParser
 
     {(generationMode.HasFlag(MemoryVariantGeneration.Span) ? commentText : "")}
     {readonlySpanTag}
-}}";
+}}
+#nullable disable";
 
 
             spc.AddSource(
