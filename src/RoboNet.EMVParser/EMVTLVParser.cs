@@ -104,42 +104,23 @@ public static partial class EMVTLVParser
     }
 
     /// <summary>
+    /// Get list of TLV from HEX TLV
+    /// </summary>
+    /// <param name="data">HEX string of TLV</param>
+    /// <returns>List of TLV tags</returns>
+    public static IReadOnlyList<TagPointerReadonly> ParseTagsList(string data)
+    {
+        return ParseTagsList(new ReadOnlyMemory<byte>(Convert.FromHexString(data)));
+    }
+    
+    /// <summary>
     /// Get list of TLV from binary list
     /// </summary>
     /// <param name="data">Bytes of TLV</param>
     /// <returns>List of TLV tags</returns>
-    public static IReadOnlyList<TagPointerReadonly> ParseTagsList(ReadOnlyMemory<byte> data)
+    public static IReadOnlyList<TagPointer> ParseTagsList(byte[] data)
     {
-        var slice = data;
-
-        var pointers = new List<TagPointerReadonly>();
-        while (!slice.IsEmpty)
-        {
-            var tagRange = ParseTagRange(slice, out var skipBytes, out var dataType, out var classType);
-            var length = ParseTagLength(slice.Slice(skipBytes), out var lengthSkipByts);
-            var value = slice.Slice(skipBytes + lengthSkipByts, length);
-
-            IReadOnlyList<TagPointerReadonly> internalTags = dataType == DataType.PrimitiveDataObject
-                ? new List<TagPointerReadonly>()
-                : ParseTagsList(value);
-
-            var tagData = tagRange.GetOffsetAndLength(slice.Length);
-
-            pointers.Add(new TagPointerReadonly()
-            {
-                FullTagData = slice.Slice(0, skipBytes + lengthSkipByts + length),
-                TagData = slice.Slice(tagData.Offset, tagData.Length),
-                ValueData = value,
-                Length = length,
-                InternalTags = internalTags,
-                TagDataType = dataType,
-                TagClassType = classType
-            });
-
-            slice = slice.Slice(skipBytes + lengthSkipByts + length);
-        }
-
-        return pointers;
+        return ParseTagsList(data.AsMemory());
     }
 
     /// <summary>
@@ -147,6 +128,7 @@ public static partial class EMVTLVParser
     /// </summary>
     /// <param name="data">Bytes of TLV</param>
     /// <returns>List of TLV tags</returns>
+    [MemoryVariantMethodGenerator(MemoryVariantGeneration.Memory)]
     public static IReadOnlyList<TagPointer> ParseTagsList(Memory<byte> data)
     {
         var slice = data;
