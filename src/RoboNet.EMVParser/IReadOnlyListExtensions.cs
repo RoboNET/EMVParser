@@ -27,7 +27,7 @@ public static class IReadOnlyListExtensions
     {
         foreach (var tag in tags)
         {
-            if (tag.TagData.Span.SequenceEqual(comparer))
+            if (tag.Tag.Span.SequenceEqual(comparer))
             {
                 return tag;
             }
@@ -53,7 +53,7 @@ public static class IReadOnlyListExtensions
     public static Memory<byte> GetTagValue(this IReadOnlyList<TagPointer> tags, string tagKey)
     {
         var tag = GetTag(tags, tagKey);
-        return tag?.ValueData ?? new Memory<byte>();
+        return tag?.Value ?? new Memory<byte>();
     }
 
     /// <summary>
@@ -66,6 +66,6 @@ public static class IReadOnlyListExtensions
     public static string GetTagHexValue(this IReadOnlyList<TagPointer> tags, string tagKey)
     {
         var tag = GetTag(tags, tagKey);
-        return tag?.Value ?? "";
+        return tag?.ValueHex ?? "";
     }
 }

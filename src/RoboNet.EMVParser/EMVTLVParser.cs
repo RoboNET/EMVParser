@@ -149,8 +149,8 @@ public static partial class EMVTLVParser
             pointers.Add(new TagPointer()
             {
                 FullTagData = slice.Slice(0, skipBytes + lengthSkipByts + length),
-                TagData = slice.Slice(tagData.Offset, tagData.Length),
-                ValueData = value,
+                Tag = slice.Slice(tagData.Offset, tagData.Length),
+                Value = value,
                 Length = length,
                 InternalTags = internalTags,
                 TagDataType = dataType,

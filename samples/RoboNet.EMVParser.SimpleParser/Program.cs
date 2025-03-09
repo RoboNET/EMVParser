@@ -18,8 +18,8 @@ foreach (var tag in tagsList)
 void WriteTag(TagPointer tag, int offset)
 {
     var offsetString = new string('-', offset * 2) + " ";
-    var tagName = EMVTags.GetTagName(tag.Tag);
-    Console.WriteLine(offsetString + "TAG:" + tag.Tag + (tagName != null ? " (NAME:" + tagName +")" : ""));
+    var tagName = EMVTags.GetTagName(tag.TagHex);
+    Console.WriteLine(offsetString + "TAG:" + tag.TagHex + (tagName != null ? " (NAME:" + tagName + ")" : ""));
 
     if (tag.InternalTags.Count > 0)
     {
@@ -31,6 +31,6 @@ void WriteTag(TagPointer tag, int offset)
     }
     else
     {
-        Console.WriteLine(offsetString + "VALUE:" + tag.Value);
+        Console.WriteLine(offsetString + "VALUE:" + tag.ValueHex);
     }
 }

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text;
 
 namespace RoboNet.EMVParser;
 
@@ -17,22 +18,32 @@ public class TagPointer
     /// <summary>
     /// Bytes of Tag part
     /// </summary>
-    public required Memory<byte> TagData { get; init; }
+    public required Memory<byte> Tag { get; init; }
 
     /// <summary>
     /// Bytes of Value part
     /// </summary>
-    public required Memory<byte> ValueData { get; init; }
+    public required Memory<byte> Value { get; init; }
 
     /// <summary>
     /// Tag part in HEX
     /// </summary>
-    public string Tag => Convert.ToHexString(TagData.Span);
+    public string TagHex => Convert.ToHexString(Tag.Span);
 
     /// <summary>
     /// Value part in HEX
     /// </summary>
-    public string Value => Convert.ToHexString(ValueData.Span);
+    public string ValueHex => Convert.ToHexString(Value.Span);
+
+    /// <summary>
+    /// Value part in ASCII encoding
+    /// </summary>
+    public string ValueString => Encoding.ASCII.GetString(Value.Span);
+
+    /// <summary>
+    /// Value part in ASCII encoding
+    /// </summary>
+    public long ValueNumeric => ParserUtils.ParseNumeric(Value.Span);
 
     /// <summary>
     /// Length
@@ -67,14 +78,14 @@ public class TagPointer
     {
         if (InternalTags.Count > 0)
         {
-            return $"Tag: {Convert.ToHexString(TagData.Span)} ({Convert.ToHexString(FullTagData.Span)}) " +
+            return $"Tag: {Convert.ToHexString(Tag.Span)} ({Convert.ToHexString(FullTagData.Span)}) " +
                    Environment.NewLine + "Internal tags:" +
                    string.Join(Environment.NewLine, InternalTags.Select(x => x.ToStringInternal()));
         }
         else
         {
             return
-                $"Tag: {Convert.ToHexString(TagData.Span)}, Value: {Convert.ToHexString(ValueData.Span)} ({Convert.ToHexString(FullTagData.Span)})";
+                $"Tag: {Convert.ToHexString(Tag.Span)}, Value: {Convert.ToHexString(Value.Span)} ({Convert.ToHexString(FullTagData.Span)})";
         }
     }
 }
