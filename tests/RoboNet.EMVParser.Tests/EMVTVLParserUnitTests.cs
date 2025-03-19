@@ -1,4 +1,5 @@
-﻿using RoboNet.EMVParser;
+﻿using System.Text;
+using RoboNet.EMVParser;
 
 namespace RoboNet.EMVParser.Tests;
 
@@ -286,5 +287,29 @@ public class EMVTVLParserUnitTests
         var tag = result.GetTag(expectedTag);
         Assert.NotNull(tag);
         Assert.Equal(expectedValue, tag.ValueString);
+    }
+    
+    [Theory]
+    [InlineData(
+        "6F5E8409A00000065810103333A5518701029F38159F7A015F2A029F02069F35019F40059F1A029F33035F2D047275656E500F4D495220436C6173736963204352449F120FBCB8C020BADBD0E1E1D8DA20BAC0B49F110105BF0C059F4D02180A9000",
+        "9F12",
+        "МИР Классик КРД")]
+    public void TestTagListParseApplicationPreferredName(string sample, string expectedTag, string expectedValue)
+    {
+        var data = Convert.FromHexString(sample).AsMemory();
+
+        var result = EMVTLVParser.ParseTagsList(data);
+        
+        var tag = result.GetTag(expectedTag);
+        Assert.NotNull(tag);
+        
+        var code = result.GetTag("9F11");
+        
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        Encoding iso8859_5 = Encoding.GetEncoding($"ISO-8859-{code.ValueNumeric}");
+        string decodedText = iso8859_5.GetString(tag.Value.Span);
+
+        
+        Assert.Equal(expectedValue, decodedText);
     }
 }
