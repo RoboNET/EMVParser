@@ -23,6 +23,8 @@ public class MemoryVariantMethodGenerator : IIncrementalGenerator
         initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource(
             "MemoryVariantMethodGeneratorAttribute.g.cs",
             SourceText.From(@"
+using System.Text;
+
 namespace RoboNet.EMVParser
 {
 
@@ -102,6 +104,8 @@ namespace RoboNet.EMVParser
                 .Replace("new TagPointer()", "new TagPointerReadonly()");
 
             var classText = $@"
+using System.Text;
+
 namespace RoboNet.EMVParser;
 
 #nullable enable

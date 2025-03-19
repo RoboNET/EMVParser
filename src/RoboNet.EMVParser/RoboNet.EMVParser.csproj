@@ -8,7 +8,7 @@
         <IsPackable>true</IsPackable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <PackageId>RoboNet.EMVParser</PackageId>
-        <Version>0.4.0</Version>
+        <Version>0.5.0</Version>
         <Authors>Mikhail Korolev (RoboNet)</Authors>
         <RepositoryUrl>https://github.com/RoboNET/EMVParser.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
@@ -39,7 +39,9 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
 
-        <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.3" />
+        <PackageReference Condition="'$(TargetFramework)'!='net5.0'" Include="System.Text.Encoding.CodePages" Version="9.0.3" />
+        <PackageReference Condition="'$(TargetFramework)'=='net5.0'" Include="System.Text.Encoding.CodePages" Version="5.0.0" />
+
     </ItemGroup>
 
     <ItemGroup>
