@@ -19,8 +19,8 @@ public class EMVTVLParserUnitTests
     public void TestParseTag(string sample,
         byte[] expectedData,
         int expectedBytes,
-        DataType exptectedDataType,
-        ClassType expectedCalssType)
+        DataType expectedDataType,
+        ClassType expectedClassType)
     {
         var data = Convert.FromHexString(sample).AsMemory();
 
@@ -29,8 +29,8 @@ public class EMVTVLParserUnitTests
         var value = data.Slice(result.Start.Value, result.End.Value - result.Start.Value);
         Assert.Equal(expectedData, value);
         Assert.Equal(expectedBytes, bytes);
-        Assert.Equal(exptectedDataType, dataType);
-        Assert.Equal(expectedCalssType, classType);
+        Assert.Equal(expectedDataType, dataType);
+        Assert.Equal(expectedClassType, classType);
     }
 
     [Theory]
@@ -46,7 +46,7 @@ public class EMVTVLParserUnitTests
     [InlineData(
         "9F26080123456789ABCDEF",
         8, 1)]
-    public void TestParseTagLength(string sample, int expectedlength, int expectedBytes)
+    public void TestParseTagLength(string sample, int expectedLength, int expectedBytes)
     {
         var data = Convert.FromHexString(sample).AsMemory();
 
@@ -54,7 +54,7 @@ public class EMVTVLParserUnitTests
 
         var tagLength = EMVTLVParser.ParseTagLength(data.Slice(bytes), out bytes);
 
-        Assert.Equal(expectedlength, tagLength);
+        Assert.Equal(expectedLength, tagLength);
         Assert.Equal(expectedBytes, bytes);
     }
 
@@ -299,8 +299,8 @@ public class EMVTVLParserUnitTests
 
         var result = EMVTLVParser.ParseTagsList(data);
 
-        var prefferedName = result.GetApplicationPrefferedName();
+        var preferredName = result.GetApplicationPreferredName();
 
-        Assert.Equal(expectedValue, prefferedName);
+        Assert.Equal(expectedValue, preferredName);
     }
 }
