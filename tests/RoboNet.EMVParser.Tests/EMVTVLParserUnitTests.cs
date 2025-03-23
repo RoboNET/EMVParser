@@ -1,7 +1,4 @@
-﻿using System.Text;
-using RoboNet.EMVParser;
-
-namespace RoboNet.EMVParser.Tests;
+﻿namespace RoboNet.EMVParser.Tests;
 
 public class EMVTVLParserUnitTests
 {
@@ -250,7 +247,7 @@ public class EMVTVLParserUnitTests
         var value = result.GetTagValue(expectedTag);
         Assert.Equal(expectedValue, Convert.ToHexString(value.Span));
 
-        var hexValue = result.GetTagHexValue(expectedTag);
+        var hexValue = result.GetTagValueHex(expectedTag);
         Assert.Equal(expectedValue, hexValue);
     }
 

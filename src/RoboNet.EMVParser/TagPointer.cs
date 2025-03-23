@@ -13,8 +13,13 @@ public class TagPointer
     /// <summary>
     /// Full TLV data
     /// </summary>
-    public required Memory<byte> FullTagData { get; init; }
+    public required Memory<byte> TLV { get; init; }
 
+    /// <summary>
+    /// Full TLV data in HEX. Same as <see cref="ToString"/>
+    /// </summary>
+    public string TLVHex => Convert.ToHexString(TLV.Span);
+    
     /// <summary>
     /// Bytes of Tag part
     /// </summary>
@@ -41,7 +46,7 @@ public class TagPointer
     public string ValueString => Encoding.ASCII.GetString(Value.Span);
 
     /// <summary>
-    /// Value part in ASCII encoding
+    /// Value part as numeric
     /// </summary>
     public long ValueNumeric => ParserUtils.ParseNumeric(Value.Span);
 
@@ -65,9 +70,13 @@ public class TagPointer
     /// </summary>
     public required ClassType TagClassType { get; init; }
 
+    /// <summary>
+    /// Full TLV data in HEX. Same as <see cref="TLVHex"/>
+    /// </summary>
+    /// <returns></returns>
     public override string ToString()
     {
-        return Convert.ToHexString(FullTagData.Span);
+        return TLVHex;
     }
 
     [DebuggerHidden]
@@ -78,14 +87,14 @@ public class TagPointer
     {
         if (InternalTags.Count > 0)
         {
-            return $"Tag: {Convert.ToHexString(Tag.Span)} ({Convert.ToHexString(FullTagData.Span)}) " +
+            return $"Tag: {Convert.ToHexString(Tag.Span)} ({Convert.ToHexString(TLV.Span)}) " +
                    Environment.NewLine + "Internal tags:" +
                    string.Join(Environment.NewLine, InternalTags.Select(x => x.ToStringInternal()));
         }
         else
         {
             return
-                $"Tag: {Convert.ToHexString(Tag.Span)}, Value: {Convert.ToHexString(Value.Span)} ({Convert.ToHexString(FullTagData.Span)})";
+                $"Tag: {Convert.ToHexString(Tag.Span)}, Value: {Convert.ToHexString(Value.Span)} ({Convert.ToHexString(TLV.Span)})";
         }
     }
 }

@@ -148,7 +148,7 @@ public static partial class EMVTLVParser
             var tagData = tagRange.GetOffsetAndLength(slice.Length);
             pointers.Add(new TagPointer()
             {
-                FullTagData = slice.Slice(0, skipBytes + lengthSkipByts + length),
+                TLV = slice.Slice(0, skipBytes + lengthSkipByts + length),
                 Tag = slice.Slice(tagData.Offset, tagData.Length),
                 Value = value,
                 Length = length,

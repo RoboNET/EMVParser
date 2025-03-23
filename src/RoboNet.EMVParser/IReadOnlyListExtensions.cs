@@ -3,7 +3,7 @@ namespace RoboNet.EMVParser;
 public static class IReadOnlyListExtensions
 {
     /// <summary>
-    /// Search for tag in list of tags
+    /// Search for first occurrence tag in list of tags
     /// </summary>
     /// <param name="tags">Parsed tags</param>
     /// <param name="tagKey">Tag name</param>
@@ -17,7 +17,7 @@ public static class IReadOnlyListExtensions
     }
 
     /// <summary>
-    /// Search for tag in list of tags
+    /// Search for first occurrence tag in list of tags
     /// </summary>
     /// <param name="tags">Parsed tags</param>
     /// <param name="comparer">Tag name</param>
@@ -44,7 +44,7 @@ public static class IReadOnlyListExtensions
     }
 
     /// <summary>
-    /// Get TLV value
+    /// Get TLV value of specified tag
     /// </summary>
     /// <param name="tags">Parsed tags</param>
     /// <param name="tagKey">Tag name</param>
@@ -57,15 +57,41 @@ public static class IReadOnlyListExtensions
     }
 
     /// <summary>
-    /// Get TLV value as hex string
+    /// Get TLV value as hex string of specified tag
     /// </summary>
     /// <param name="tags">Parsed tags</param>
     /// <param name="tagKey">Tag name</param>
     /// <returns>HEX value or empty string if tag not found</returns>
     [MemoryVariantMethodGenerator(MemoryVariantGeneration.Memory)]
-    public static string GetTagHexValue(this IReadOnlyList<TagPointer> tags, string tagKey)
+    public static string GetTagValueHex(this IReadOnlyList<TagPointer> tags, string tagKey)
     {
         var tag = GetTag(tags, tagKey);
         return tag?.ValueHex ?? "";
+    }
+    
+    /// <summary>
+    /// Get TLV full data of specified tag
+    /// </summary>
+    /// <param name="tags">Parsed tags</param>
+    /// <param name="tagKey">Tag name</param>
+    /// <returns>Bytes of value</returns>
+    [MemoryVariantMethodGenerator(MemoryVariantGeneration.Memory)]
+    public static Memory<byte> GetTagData(this IReadOnlyList<TagPointer> tags, string tagKey)
+    {
+        var tag = GetTag(tags, tagKey);
+        return tag?.TLV ?? new Memory<byte>();
+    }
+
+    /// <summary>
+    /// Get TLV full data as hex string of specified tag
+    /// </summary>
+    /// <param name="tags">Parsed tags</param>
+    /// <param name="tagKey">Tag name</param>
+    /// <returns>HEX value or empty string if tag not found</returns>
+    [MemoryVariantMethodGenerator(MemoryVariantGeneration.Memory)]
+    public static string GetTagDataHex(this IReadOnlyList<TagPointer> tags, string tagKey)
+    {
+        var tag = GetTag(tags, tagKey);
+        return tag?.TLVHex ?? "";
     }
 }
