@@ -16,6 +16,18 @@ public class EMVTVLParserUnitTests
         "9F26080123456789ABCDEF",
         new byte[] { 159, 38 }, 2, DataType.PrimitiveDataObject,
         ClassType.ContextSpecificClass)]
+    [InlineData(
+        "1F81790102", // Tag: 1F8180, Length: 01, Value: 02
+        new byte[] { 0x1F, 0x81, 0x79 }, 
+        3,
+        DataType.PrimitiveDataObject,
+        ClassType.UniversalClass)]
+    [InlineData(
+        "1FFF81600102", // Tag: 1FFF8160, Length: 01, Value: 02
+        new byte[] { 0x1F, 0xFF, 0x81, 0x60 }, 
+        4,
+        DataType.PrimitiveDataObject,
+        ClassType.UniversalClass)]
     public void TestParseTag(string sample,
         byte[] expectedData,
         int expectedBytes,
@@ -27,7 +39,7 @@ public class EMVTVLParserUnitTests
         var result = EMVTLVParser.ParseTagRange(data, out int bytes, out var dataType, out var classType);
 
         var value = data.Slice(result.Start.Value, result.End.Value - result.Start.Value);
-        Assert.Equal(expectedData, value);
+        Assert.Equal(expectedData, value.ToArray());
         Assert.Equal(expectedBytes, bytes);
         Assert.Equal(expectedDataType, dataType);
         Assert.Equal(expectedClassType, classType);

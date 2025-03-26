@@ -118,3 +118,9 @@ A5;File Control Information (FCI) Proprietary Template;Identifies the data objec
 9C;Transaction Type;Indicates the type of financial transaction, represented by the first two digits of ISO 8583:1987 Processing Code
 9F37;Unpredictable Number;Value to provide variability and uniqueness to the generation of a cryptogram
 9F23;Upper Consecutive Offline Limit;Issuer-specified preference for the maximum number of consecutive offline transactions for this ICC application allowed in a terminal without online capability
+A1;Biometric Header Template (BHT);Template containing biometric header information
+BF4A;Offline BIT Group Template;Template containing offline biometric information
+BF4B;Online BIT Group Template;Template containing online biometric information
+BF4C;Biometric Try Counters Template;Template containing biometric verification attempt counters
+BF4D;Preferred Attempts Template;Template containing preferred number of biometric verification attempts
+BF4E;Biometric Verification Data Template;Template containing biometric verification data

@@ -1,4 +1,5 @@
 namespace RoboNet.EMVParser;
+using System.Text;
 
 public static partial class EMVTLVParser
 {
@@ -16,25 +17,31 @@ public static partial class EMVTLVParser
         while (!slice.IsEmpty)
         {
             var tagRange = ParseTagRange(slice, out var skipBytes, out var dataType, out _);
-            var length = ParseTagLength(slice.Slice(skipBytes), out var lengthSkipByts);
+            var length = ParseTagLength(slice.Slice(skipBytes), out var lengthSkipBytes);
 
             var tagRangeData = tagRange.GetOffsetAndLength(slice.Length);
             var tag = slice.Slice(tagRangeData.Offset, tagRangeData.Length);
 
+            if (tag.Span.SequenceEqual(tagKey))
+            {
+                // If length is 0, return empty array
+                if (length == 0)
+                {
+                    return Array.Empty<byte>();
+                }
+                return slice.Slice(skipBytes + lengthSkipBytes, length);
+            }
+
             if (dataType == DataType.ConstructedDataObject)
             {
-                var value = slice.Slice(skipBytes + lengthSkipByts, length);
+                var value = slice.Slice(skipBytes + lengthSkipBytes, length);
+                // For constructed tags, try to parse internal tags
                 var internalTag = GetTagValue(value, tagKey);
                 if (!internalTag.IsEmpty)
                     return internalTag;
             }
-
-            if (tag.Span.SequenceEqual(tagKey))
-            {
-                return slice.Slice(skipBytes + lengthSkipByts, length);
-            }
-
-            slice = slice.Slice(skipBytes + lengthSkipByts + length);
+            
+            slice = slice.Slice(skipBytes + lengthSkipBytes + length);
         }
 
         return Array.Empty<byte>();
@@ -132,24 +139,37 @@ public static partial class EMVTLVParser
     public static IReadOnlyList<TagPointer> ParseTagsList(Memory<byte> data)
     {
         var slice = data;
-
         var pointers = new List<TagPointer>();
 
         while (!slice.IsEmpty)
         {
             var tagRange = ParseTagRange(slice, out var skipBytes, out var dataType, out var classType);
             var length = ParseTagLength(slice.Slice(skipBytes), out var lengthSkipByts);
-            var value = slice.Slice(skipBytes + lengthSkipByts, length);
-
-            IReadOnlyList<TagPointer> internalTags = dataType == DataType.PrimitiveDataObject
-                ? new List<TagPointer>()
-                : ParseTagsList(value);
-
+            
             var tagData = tagRange.GetOffsetAndLength(slice.Length);
+            var tag = slice.Slice(tagData.Offset, tagData.Length);
+            
+            Memory<byte> value;
+            IReadOnlyList<TagPointer> internalTags;
+            
+            if (length == 0)
+            {
+                value = Array.Empty<byte>();
+                internalTags = new List<TagPointer>();
+            }
+            else
+            {
+                value = slice.Slice(skipBytes + lengthSkipByts, length);
+                // Parse internal tags for constructed object
+                internalTags = dataType == DataType.ConstructedDataObject && length > 0
+                    ? ParseTagsList(value)
+                    : new List<TagPointer>();
+            }
+
             pointers.Add(new TagPointer()
             {
                 TLV = slice.Slice(0, skipBytes + lengthSkipByts + length),
-                Tag = slice.Slice(tagData.Offset, tagData.Length),
+                Tag = tag,
                 Value = value,
                 Length = length,
                 InternalTags = internalTags,
@@ -186,7 +206,7 @@ public static partial class EMVTLVParser
                 ((byte)(firstLengthByte << 1)) >> 1; //Remove 1 bit from left
 
             skipBytes = 1 + lengthSize;
-            var arr = new byte[4];
+            Span<byte> arr = stackalloc byte[4];
 
             for (int i = 0; i < lengthSize; i++)
             {
@@ -219,15 +239,18 @@ public static partial class EMVTLVParser
             ? 0
             : 1); //Check 5-th bit to get data type
 
-        if (tagType == 31)
+        if (tagType == 31) // If first 5 bits are equal to 11111
         {
-            skipBytes = 2;
-            return new Range(0, 2);
+            int tagLength = 2;
+            while (tagLength < data.Length && (data[tagLength - 1] & 0x80) != 0) // Check continuation bit
+            {
+                tagLength++;
+            }
+            skipBytes = tagLength;
+            return new Range(0, tagLength);
         }
-        else
-        {
-            skipBytes = 1;
-            return new Range(0, 1);
-        }
+
+        skipBytes = 1;
+        return new Range(0, 1);
     }
 }
