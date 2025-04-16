@@ -212,9 +212,7 @@ public static partial class EMVTLVParser
             {
                 arr[i] = data[1 + i];
             }
-
-            data.Slice(1, lengthSize).ToArray();
-
+            
             return BitConverter.ToInt32(arr);
         }
     }
