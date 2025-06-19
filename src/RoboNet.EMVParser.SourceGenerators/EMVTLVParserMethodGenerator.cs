@@ -86,6 +86,11 @@ namespace RoboNet.EMVParser
                     .Replace("List<TagPointer>", "List<TagPointerReadonly>")
                     .Replace("new List<TagPointer>()", "new List<TagPointerReadonly>()")
                     .Replace("new TagPointer()", "new TagPointerReadonly()")
+                    .Replace("TagLengthPointer", "TagLengthPointerReadonly")
+                    .Replace("IReadOnlyList<TagLengthPointer>", "IReadOnlyList<TagLengthPointerReadonly>")
+                    .Replace("List<TagLengthPointer>", "List<TagLengthPointerReadonly>")
+                    .Replace("new List<TagLengthPointer>()", "new List<TagLengthPointerReadonly>()")
+                    .Replace("new TagLengthPointer()", "new TagLengthPointerReadonly()")
                 : "";
 
             var spanTag = generationMode.HasFlag(MemoryVariantGeneration.Span)
@@ -101,15 +106,22 @@ namespace RoboNet.EMVParser
                 .Replace("IReadOnlyList<TagPointer>", "IReadOnlyList<TagPointerReadonly>")
                 .Replace("List<TagPointer>", "List<TagPointerReadonly>")
                 .Replace("new List<TagPointer>()", "new List<TagPointerReadonly>()")
-                .Replace("new TagPointer()", "new TagPointerReadonly()");
+                .Replace("new TagPointer()", "new TagPointerReadonly()")
+                .Replace("TagLengthPointer", "TagLengthPointerReadonly")
+                .Replace("IReadOnlyList<TagLengthPointer>", "IReadOnlyList<TagLengthPointerReadonly>")
+                .Replace("List<TagLengthPointer>", "List<TagLengthPointerReadonly>")
+                .Replace("new List<TagLengthPointer>()", "new List<TagLengthPointerReadonly>()")
+                .Replace("new TagLengthPointer()", "new TagLengthPointerReadonly()");
 
+            var className = (methodDeclarationSyntax.Parent as ClassDeclarationSyntax).Identifier.Text;
+            
             var classText = $@"
 using System.Text;
 
 namespace RoboNet.EMVParser;
 
 #nullable enable
-public static partial class EMVTLVParser
+public static partial class {className}
 {{
     {(generationMode.HasFlag(MemoryVariantGeneration.Memory) ? commentText : "")}
     {readonlyTag}
@@ -122,9 +134,8 @@ public static partial class EMVTLVParser
 }}
 #nullable disable";
 
-
             spc.AddSource(
-                $"EMVTLVParser_{methodDeclarationSyntax.Identifier}_{methodDeclarationSyntax.ParameterList.ToString()
+                $"{className}_{methodDeclarationSyntax.Identifier}_{methodDeclarationSyntax.ParameterList.ToString()
                     .Replace(" ", "")
                     .Replace(",", "")
                     .Replace("[", "").Replace("]", "")

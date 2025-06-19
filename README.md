@@ -1,6 +1,6 @@
 # EMV Parser [![NuGet Version](https://img.shields.io/nuget/v/RoboNet.EMVParser.svg?style=flat)](https://www.nuget.org/packages/RoboNet.EMVParser/)&nbsp;
 
-Span API based EMV TLV parser for .NET. This library is designed to parse EMV data structures, specifically the BER-TLV (Tag-Length-Value) format used in EMV transactions.
+Span API based EMV TLV parser for .NET. This library is designed to parse EMV data structures, specifically the BER-TLV (Tag-Length-Value) format used in EMV transactions and DOL (Data Object List).
 
 ## Features
 
@@ -27,7 +27,7 @@ var someEMVData = "5F2A02097882021C00950580800088009A032110149C01009F02060000000
 var data = Convert.FromHexString(someEMVData);
 
 // Get all tags
-IReadOnlyList<TagPointer> tagsList = EMVTLVParser.ParseTagsList(data);
+IReadOnlyList<TagPointer> tagsList = TLVParser.ParseTagsList(data);
 
 foreach (var tag in tagsList)
 {
@@ -38,7 +38,7 @@ foreach (var tag in tagsList)
 Get specific tag value from EMV data:
 ```csharp
 // Get value of tag 5F2A
-Span<byte> tagValue = EMVTLVParser.ReadTagValue(data.AsSpan(), "5F2A"); 
+Span<byte> tagValue = TLVParser.ReadTagValue(data.AsSpan(), "5F2A"); 
 Console.WriteLine("Tag 5F2A value: " + Convert.ToHexString(tagValue));
 ```
 

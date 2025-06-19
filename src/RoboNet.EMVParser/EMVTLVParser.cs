@@ -1,7 +1,9 @@
 namespace RoboNet.EMVParser;
-using System.Text;
 
-public static partial class EMVTLVParser
+/// <summary>
+/// Parser for TLV data format
+/// </summary>
+public static partial class TLVParser
 {
     /// <summary>
     /// Get value of specified tag from TLV data

@@ -19,7 +19,7 @@ public class TagPointer
     /// Full TLV data in HEX. Same as <see cref="ToString"/>
     /// </summary>
     public string TLVHex => Convert.ToHexString(TLV.Span);
-    
+
     /// <summary>
     /// Bytes of Tag part
     /// </summary>
@@ -71,6 +71,11 @@ public class TagPointer
     public required ClassType TagClassType { get; init; }
 
     /// <summary>
+    /// Get tag name
+    /// </summary>
+    public string? Name => EMVTags.GetTagName(TagHex);
+    
+    /// <summary>
     /// Full TLV data in HEX. Same as <see cref="TLVHex"/>
     /// </summary>
     /// <returns></returns>
@@ -87,14 +92,14 @@ public class TagPointer
     {
         if (InternalTags.Count > 0)
         {
-            return $"Tag: {Convert.ToHexString(Tag.Span)} ({Convert.ToHexString(TLV.Span)}) " +
+            return $"Tag: {Convert.ToHexString(Tag.Span)} {Name} ({Convert.ToHexString(TLV.Span)}) " +
                    Environment.NewLine + "Internal tags:" +
                    string.Join(Environment.NewLine, InternalTags.Select(x => x.ToStringInternal()));
         }
         else
         {
             return
-                $"Tag: {Convert.ToHexString(Tag.Span)}, Value: {Convert.ToHexString(Value.Span)} ({Convert.ToHexString(TLV.Span)})";
+                $"Tag: {Convert.ToHexString(Tag.Span)} {Name}, Value: {Convert.ToHexString(Value.Span)} ({Convert.ToHexString(TLV.Span)})";
         }
     }
 }

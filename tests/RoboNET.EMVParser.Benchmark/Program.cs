@@ -19,10 +19,10 @@ namespace RoboNET.EMVParser.Benchmark
 
 
         [Benchmark]
-        public void ParseTagsList() => EMVTLVParser.ParseTagsList(tag);
+        public void ParseTagsList() => TLVParser.ParseTagsList(tag);
         
         [Benchmark]
-        public void GetTagValue() => EMVTLVParser.GetTagValue(tag, "9F02");
+        public void GetTagValue() => TLVParser.GetTagValue(tag, "9F02");
 
     }
 

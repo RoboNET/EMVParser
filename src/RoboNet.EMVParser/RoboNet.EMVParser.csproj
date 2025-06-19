@@ -8,12 +8,12 @@
         <IsPackable>true</IsPackable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <PackageId>RoboNet.EMVParser</PackageId>
-        <Version>0.6.1</Version>
+        <Version>0.7.0</Version>
         <Authors>Mikhail Korolev (RoboNet)</Authors>
         <RepositoryUrl>https://github.com/RoboNET/EMVParser.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <Description>EMV BER-TLV Parser for .NET</Description>
-        <PackageTags>emv tlv ber parser emvparser emvtlv bertlv tags</PackageTags>
+        <PackageTags>emv tlv ber parser emvparser emvtlv bertlv tags dol</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>

@@ -1,6 +1,6 @@
 ﻿namespace RoboNet.EMVParser.Tests;
 
-public class EMVTVLParserUnitTests
+public class TLVParserUnitTests
 {
     [Theory]
     [InlineData(
@@ -36,7 +36,7 @@ public class EMVTVLParserUnitTests
     {
         var data = Convert.FromHexString(sample).AsMemory();
 
-        var result = EMVTLVParser.ParseTagRange(data, out int bytes, out var dataType, out var classType);
+        var result = TLVParser.ParseTagRange(data, out int bytes, out var dataType, out var classType);
 
         var value = data.Slice(result.Start.Value, result.End.Value - result.Start.Value);
         Assert.Equal(expectedData, value.ToArray());
@@ -62,9 +62,9 @@ public class EMVTVLParserUnitTests
     {
         var data = Convert.FromHexString(sample).AsMemory();
 
-        _ = EMVTLVParser.ParseTagRange(data, out int bytes, out _, out _);
+        _ = TLVParser.ParseTagRange(data, out int bytes, out _, out _);
 
-        var tagLength = EMVTLVParser.ParseTagLength(data.Slice(bytes), out bytes);
+        var tagLength = TLVParser.ParseTagLength(data.Slice(bytes), out bytes);
 
         Assert.Equal(expectedLength, tagLength);
         Assert.Equal(expectedBytes, bytes);
@@ -86,7 +86,7 @@ public class EMVTVLParserUnitTests
     {
         var data = Convert.FromHexString(sample).AsMemory();
 
-        var result = EMVTLVParser.ParseTagsList(data);
+        var result = TLVParser.ParseTagsList(data);
 
         var tag = result.FirstOrDefault(t => string.Equals(t.TagHex, expectedTag, StringComparison.Ordinal));
         Assert.NotNull(tag);
@@ -112,7 +112,7 @@ public class EMVTVLParserUnitTests
     {
         var data = new ReadOnlyMemory<byte>(Convert.FromHexString(sample));
 
-        var result = EMVTLVParser.ParseTagsList(data);
+        var result = TLVParser.ParseTagsList(data);
 
         var tag = result.FirstOrDefault(t => string.Equals(t.TagHex, expectedTag, StringComparison.Ordinal));
         Assert.NotNull(tag);
@@ -141,7 +141,7 @@ public class EMVTVLParserUnitTests
     {
         var data = Convert.FromHexString(sample).AsMemory();
 
-        var result = EMVTLVParser.GetTagValue(data, expectedTag);
+        var result = TLVParser.GetTagValue(data, expectedTag);
 
         Assert.Equal(expectedValue, Convert.ToHexString(result.Span));
     }
@@ -165,7 +165,7 @@ public class EMVTVLParserUnitTests
     {
         var data = new ReadOnlyMemory<byte>(Convert.FromHexString(sample));
 
-        var result = EMVTLVParser.GetTagValue(data, expectedTag);
+        var result = TLVParser.GetTagValue(data, expectedTag);
 
         Assert.Equal(expectedValue, Convert.ToHexString(result.Span));
     }
@@ -189,7 +189,7 @@ public class EMVTVLParserUnitTests
     {
         var data = new Span<byte>(Convert.FromHexString(sample));
 
-        var result = EMVTLVParser.GetTagValue(data, expectedTag);
+        var result = TLVParser.GetTagValue(data, expectedTag);
 
         Assert.Equal(expectedValue, Convert.ToHexString(result));
     }
@@ -213,7 +213,7 @@ public class EMVTVLParserUnitTests
     {
         var data = new ReadOnlySpan<byte>(Convert.FromHexString(sample));
 
-        var result = EMVTLVParser.GetTagValue(data, expectedTag);
+        var result = TLVParser.GetTagValue(data, expectedTag);
 
         Assert.Equal(expectedValue, Convert.ToHexString(result));
     }
@@ -250,7 +250,7 @@ public class EMVTVLParserUnitTests
     {
         var data = Convert.FromHexString(sample).AsMemory();
 
-        var result = EMVTLVParser.ParseTagsList(data);
+        var result = TLVParser.ParseTagsList(data);
 
         var tag = result.GetTag(expectedTag);
         Assert.NotNull(tag);
@@ -275,7 +275,7 @@ public class EMVTVLParserUnitTests
     {
         var data = Convert.FromHexString(sample).AsMemory();
 
-        var result = EMVTLVParser.ParseTagsList(data);
+        var result = TLVParser.ParseTagsList(data);
 
         var tag = result.GetTag(expectedTag);
         Assert.NotNull(tag);
@@ -291,7 +291,7 @@ public class EMVTVLParserUnitTests
     {
         var data = Convert.FromHexString(sample).AsMemory();
 
-        var result = EMVTLVParser.ParseTagsList(data);
+        var result = TLVParser.ParseTagsList(data);
 
         var tag = result.GetTag(expectedTag);
         Assert.NotNull(tag);
@@ -309,7 +309,7 @@ public class EMVTVLParserUnitTests
     {
         var data = Convert.FromHexString(sample).AsMemory();
 
-        var result = EMVTLVParser.ParseTagsList(data);
+        var result = TLVParser.ParseTagsList(data);
 
         var preferredName = result.GetApplicationPreferredName();
 

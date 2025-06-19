@@ -1,6 +1,6 @@
 namespace RoboNet.EMVParser;
 
-public static class IReadOnlyListExtensions
+public static partial class IReadOnlyListExtensions
 {
     /// <summary>
     /// Search for first occurrence tag in list of tags

@@ -38,3 +38,37 @@ namespace RoboNet.EMVParser
         });
     }
 }
+
+[Generator]
+public class TagLengthPointerReadonlyGenerator : IIncrementalGenerator
+{
+    public void Initialize(IncrementalGeneratorInitializationContext initContext)
+    {
+        var enumsToGenerate = initContext.SyntaxProvider
+            .ForAttributeWithMetadataName(
+                "RoboNet.EMVParser.TagLengthPointerGenerationAttribute",
+                predicate: (node, _) => node is ClassDeclarationSyntax,
+                transform: static (ctx, _) => ctx.SemanticModel);
+        
+        initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource(
+            "TagLengthPointerGenerationAttribute.g.cs",
+            SourceText.From(@"
+namespace RoboNet.EMVParser
+{
+    [System.AttributeUsage(System.AttributeTargets.Class)]
+    public class TagLengthPointerGenerationAttribute : System.Attribute
+    {
+    }
+}", Encoding.UTF8)));
+
+        initContext.RegisterSourceOutput(enumsToGenerate, (spc, nameAndContent) =>
+        {
+            var readonlyTag = nameAndContent.SyntaxTree.ToString()
+                .Replace("[TagLengthPointerGeneration]","")
+                .Replace("TagLengthPointer", "TagLengthPointerReadonly")
+                .Replace("Memory<byte>", "ReadOnlyMemory<byte>");
+
+            spc.AddSource($"TagLengthPointerReadonly.g.cs", SourceText.From(readonlyTag, Encoding.UTF8));
+        });
+    }
+}

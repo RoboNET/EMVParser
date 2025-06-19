@@ -8,7 +8,7 @@ var emvTags = Console.ReadLine();
 
 var data = Convert.FromHexString(emvTags!);
 
-var tagsList = EMVTLVParser.ParseTagsList(data);
+var tagsList = TLVParser.ParseTagsList(data);
 
 foreach (var tag in tagsList)
 {

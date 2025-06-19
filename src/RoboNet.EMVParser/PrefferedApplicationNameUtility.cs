@@ -2,7 +2,7 @@ using System.Text;
 
 namespace RoboNet.EMVParser;
 
-public static class PreferredApplicationNameUtility
+public static partial class PreferredApplicationNameUtility
 {
     static PreferredApplicationNameUtility()
     {
