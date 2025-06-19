@@ -2,7 +2,7 @@
 
 [![NuGet Version](https://img.shields.io/nuget/v/RoboNet.EMVParser.svg?style=flat)](https://www.nuget.org/packages/RoboNet.EMVParser/)
 
-RoboNet.EMVParser is a high-performance library for working with EMV data in TLV format, optimized for use in .NET applications.
+RoboNet.EMVParser is a high-performance library for working with EMV data in TLV and DOL formats, optimized for use in .NET applications.
 
 ## Key Features
 
@@ -12,6 +12,7 @@ RoboNet.EMVParser is a high-performance library for working with EMV data in TLV
 - 🎯 Support for long tags and multi-byte lengths
 - 🛠️ Convenient extension methods for working with tag lists
 - 💡 Performance optimization and minimal memory allocation
+- 🔢 DOL (Data Object List) parsing support for CDOL1, CDOL2, and DDOL structures
 
 ## Installation
 
@@ -34,6 +35,15 @@ var tag = tagsList.GetTag("9F26");
 if (tag != null)
 {
     Console.WriteLine($"Tag value: {tag.ValueHex}");
+}
+
+// Parse DOL (Data Object List) - contains tag-length pairs without values
+var dolData = "9F02069F1D029F03069F1A0295055F2A029A039C019F37049F21039F7C14";
+IReadOnlyList<TagLengthPointer> dolTags = DOLParser.ParseTagsList(dolData);
+
+foreach (var dolTag in dolTags)
+{
+    Console.WriteLine($"DOL Tag: {dolTag.TagHex}, Expected Length: {dolTag.Length}");
 }
 ```
 
@@ -288,4 +298,151 @@ var tagDescription = EMVTags.GetTagName(applicationCryptogram.TagHex);
 Console.WriteLine($"Tag: {applicationCryptogram.TagHex}");
 Console.WriteLine($"Description: {tagDescription}");
 Console.WriteLine($"Value: {applicationCryptogram.ValueHex}");
+```
+
+# Working with DOL (Data Object List)
+
+DOL (Data Object List) is a special EMV data structure that defines a list of data objects and their expected lengths, but does not contain the actual values. DOL structures are commonly used in EMV transactions to specify what data should be included in various operations.
+
+## Common DOL Types
+
+### CDOL1 (Card Risk Management Data Object List 1)
+- **Tag**: `8C`
+- Used during the first GENERATE AC command
+- Specifies data elements required by the card for risk management
+
+### CDOL2 (Card Risk Management Data Object List 2)  
+- **Tag**: `8D`
+- Used during the second GENERATE AC command (if present)
+- Contains additional data elements for final authorization
+
+### DDOL (Dynamic Data Authentication Data Object List)
+- **Tag**: `9F49`
+- Used for Dynamic Data Authentication
+- Specifies data elements for cryptographic verification
+
+## DOL Structure
+
+Unlike TLV format, DOL uses TL (Tag-Length) format:
+- **Tag**: Identifies the data element
+- **Length**: Specifies expected length in bytes
+- **No Value**: DOL only defines structure, not actual data
+
+## Using DOLParser
+
+### Basic DOL Parsing
+
+```csharp
+// Example CDOL1 data - contains tag-length pairs
+var cdol1Data = "9F02069F1D029F03069F1A0295055F2A029A039C019F37049F21039F7C14";
+IReadOnlyList<TagLengthPointer> dolTags = DOLParser.ParseTagsList(cdol1Data);
+
+// Display DOL structure
+foreach (var dolTag in dolTags)
+{
+    string tagName = EMVTags.GetTagName(dolTag.TagHex) ?? "Unknown";
+    Console.WriteLine($"Tag: {dolTag.TagHex} ({tagName})");
+    Console.WriteLine($"Expected Length: {dolTag.Length} bytes");
+    Console.WriteLine($"Data Type: {dolTag.TagDataType}");
+    Console.WriteLine("---");
+}
+```
+
+### TagLengthPointer Properties
+
+The `TagLengthPointer` class provides access to DOL entry information:
+
+```csharp
+var dolTag = dolTags.First();
+
+// Raw data access
+Memory<byte> tlData = dolTag.TL;        // Complete TL bytes
+Memory<byte> tagBytes = dolTag.Tag;     // Tag bytes only
+int expectedLength = dolTag.Length;     // Expected data length
+
+// Convenience properties
+string tlHex = dolTag.TLHex;           // TL data as hex string
+string tagHex = dolTag.TagHex;         // Tag as hex string
+string? tagName = dolTag.Name;         // Human-readable tag name
+
+// Metadata
+DataType dataType = dolTag.TagDataType;    // Primitive/Constructed
+ClassType classType = dolTag.TagClassType; // Universal/Application/etc
+```
+
+### Working with Different Input Types
+
+```csharp
+// From hex string
+var dolTags1 = DOLParser.ParseTagsList("9F02069F1D02");
+
+// From byte array  
+byte[] dolBytes = Convert.FromHexString("9F02069F1D02");
+var dolTags2 = DOLParser.ParseTagsList(dolBytes);
+
+// From Memory<byte>
+Memory<byte> dolMemory = dolBytes.AsMemory();
+var dolTags3 = DOLParser.ParseTagsList(dolMemory);
+```
+
+### Practical Example: Processing CDOL1
+
+```csharp
+// Parse CDOL1 from card response
+var cdol1Hex = "9F02069F1D029F03069F1A0295055F2A029A039C019F37049F21039F7C14";
+var cdol1Structure = DOLParser.ParseTagsList(cdol1Hex);
+
+Console.WriteLine("CDOL1 Structure:");
+Console.WriteLine("================");
+
+int totalLength = 0;
+foreach (var entry in cdol1Structure)
+{
+    var tagName = EMVTags.GetTagName(entry.TagHex) ?? "Unknown Tag";
+    Console.WriteLine($"{entry.TagHex}: {tagName} ({entry.Length} bytes)");
+    totalLength += entry.Length;
+}
+
+Console.WriteLine($"\nTotal expected data length: {totalLength} bytes");
+
+// Now you know what data to collect for the GENERATE AC command
+// For example, if CDOL1 contains 9F02 (Amount, Authorized), you need to provide 6 bytes
+// representing the transaction amount
+```
+
+## DOL vs TLV Comparison
+
+| Aspect | TLV Format | DOL Format |
+|--------|------------|------------|
+| Structure | Tag-Length-Value | Tag-Length only |
+| Purpose | Contains actual data | Defines data structure |
+| Usage | Data transmission | Data specification |
+| Parser | `TLVParser` | `DOLParser` |
+| Result Type | `TagPointer` | `TagLengthPointer` |
+
+## Performance Characteristics
+
+Like the main TLV parser, `DOLParser` is optimized for performance:
+- Uses `Span<byte>` and `Memory<byte>` for zero-copy operations
+- Minimal memory allocations during parsing
+- Efficient byte-level operations
+- No unnecessary string conversions during parsing
+
+## Error Handling
+
+The DOL parser handles malformed data gracefully:
+- Invalid tag structures are skipped
+- Parsing continues even if individual entries are malformed  
+- Use try-catch blocks for robust error handling in production code
+
+```csharp
+try
+{
+    var dolTags = DOLParser.ParseTagsList(dolData);
+    // Process DOL structure
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"DOL parsing failed: {ex.Message}");
+}
 ``` 

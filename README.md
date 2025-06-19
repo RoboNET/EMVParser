@@ -1,6 +1,6 @@
 # EMV Parser [![NuGet Version](https://img.shields.io/nuget/v/RoboNet.EMVParser.svg?style=flat)](https://www.nuget.org/packages/RoboNet.EMVParser/)&nbsp;
 
-Span API based EMV TLV parser for .NET. This library is designed to parse EMV data structures, specifically the BER-TLV (Tag-Length-Value) format used in EMV transactions and DOL (Data Object List).
+Span API based EMV TLV and DOL parser for .NET. This library is designed to parse EMV data structures, specifically the BER-TLV (Tag-Length-Value) format used in EMV transactions and DOL (Data Object List) structures.
 
 ## Features
 
@@ -10,6 +10,7 @@ Span API based EMV TLV parser for .NET. This library is designed to parse EMV da
 - 🎯 Support for long tags and multi-byte lengths
 - 🛠️ Convenient extension methods for working with tag lists
 - 💡 Performance optimization and minimal memory allocation
+- 🔢 DOL (Data Object List) parsing support for CDOL1, CDOL2, and DDOL structures
 - 📝 Built-in EMV tags dictionary with descriptions and strongly-typed constants
 - 📝 Comprehensive documentation in [English](docs/main.en.md) and [Russian](docs/main.ru.md)
 
@@ -40,6 +41,18 @@ Get specific tag value from EMV data:
 // Get value of tag 5F2A
 Span<byte> tagValue = TLVParser.ReadTagValue(data.AsSpan(), "5F2A"); 
 Console.WriteLine("Tag 5F2A value: " + Convert.ToHexString(tagValue));
+```
+
+Parse DOL (Data Object List) structures:
+```csharp
+// Parse CDOL1 or DDOL structure - contains tag-length pairs without values
+var dolData = "9F02069F1D029F03069F1A0295055F2A029A039C019F37049F21039F7C14";
+IReadOnlyList<TagLengthPointer> dolTags = DOLParser.ParseTagsList(dolData);
+
+foreach (var dolTag in dolTags)
+{
+    Console.WriteLine($"Tag: {dolTag.TagHex}, Expected Length: {dolTag.Length}");
+}
 ```
 
 ## Main Features
