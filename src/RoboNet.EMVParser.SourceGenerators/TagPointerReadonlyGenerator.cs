@@ -72,3 +72,38 @@ namespace RoboNet.EMVParser
         });
     }
 }
+
+
+[Generator]
+public class OnlyTagPointerReadonlyGenerator : IIncrementalGenerator
+{
+    public void Initialize(IncrementalGeneratorInitializationContext initContext)
+    {
+        var enumsToGenerate = initContext.SyntaxProvider
+            .ForAttributeWithMetadataName(
+                "RoboNet.EMVParser.OnlyTagPointerGenerationAttribute",
+                predicate: (node, _) => node is ClassDeclarationSyntax,
+                transform: static (ctx, _) => ctx.SemanticModel);
+        
+        initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource(
+            "OnlyTagPointerGenerationAttribute.g.cs",
+            SourceText.From(@"
+namespace RoboNet.EMVParser
+{
+    [System.AttributeUsage(System.AttributeTargets.Class)]
+    public class OnlyTagPointerGenerationAttribute : System.Attribute
+    {
+    }
+}", Encoding.UTF8)));
+
+        initContext.RegisterSourceOutput(enumsToGenerate, (spc, nameAndContent) =>
+        {
+            var readonlyTag = nameAndContent.SyntaxTree.ToString()
+                .Replace("[OnlyTagPointerGeneration]","")
+                .Replace("OnlyTagPointer", "OnlyTagPointerReadonly")
+                .Replace("Memory<byte>", "ReadOnlyMemory<byte>");
+
+            spc.AddSource($"OnlyTagPointerReadonly.g.cs", SourceText.From(readonlyTag, Encoding.UTF8));
+        });
+    }
+}
