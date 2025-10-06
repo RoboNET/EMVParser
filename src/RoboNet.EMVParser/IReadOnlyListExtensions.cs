@@ -68,7 +68,7 @@ public static partial class IReadOnlyListExtensions
         var tag = GetTag(tags, tagKey);
         return tag?.ValueHex ?? "";
     }
-    
+
     /// <summary>
     /// Get TLV full data of specified tag
     /// </summary>

@@ -76,25 +76,54 @@ jobs:
             "categories": [
               {
                 "title": "## 🚀 Features",
-                "labels": ["feat", "feature"]
+                "rules": [
+                  {"pattern": "^feat(\\(.+\\))?!?:", "on_property": "subject"}
+                ]
               },
               {
-                "title": "## 🐛 Fixes",
-                "labels": ["fix", "bug"]
+                "title": "## 🐛 Bug Fixes",
+                "rules": [
+                  {"pattern": "^fix(\\(.+\\))?!?:", "on_property": "subject"}
+                ]
               },
               {
                 "title": "## 🧪 Tests",
-                "labels": ["test"]
+                "rules": [
+                  {"pattern": "^test(\\(.+\\))?!?:", "on_property": "subject"}
+                ]
               },
               {
                 "title": "## 📝 Documentation",
-                "labels": ["docs"]
+                "rules": [
+                  {"pattern": "^docs(\\(.+\\))?!?:", "on_property": "subject"}
+                ]
+              },
+              {
+                "title": "## 🔧 Chores",
+                "rules": [
+                  {"pattern": "^chore(\\(.+\\))?!?:", "on_property": "subject"}
+                ]
+              },
+              {
+                "title": "## ♻️ Refactoring",
+                "rules": [
+                  {"pattern": "^refactor(\\(.+\\))?!?:", "on_property": "subject"}
+                ]
               },
               {
                 "title": "## 🔨 Other Changes",
-                "labels": []
+                "rules": [
+                  {"pattern": ".*", "on_property": "subject"}
+                ]
               }
-            ]
+            ],
+            "ignore_labels": ["ignore"],
+            "sort": "ASC",
+            "template": "${{CHANGELOG}}",
+            "pr_template": "- ${{TITLE}} (#${{NUMBER}})",
+            "commit_template": "- ${{TITLE}}",
+            "empty_template": "- No changes",
+            "trim_values": true
           }
         toTag: v${{ steps.version.outputs.new_version }}
       env:
