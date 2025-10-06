@@ -71,7 +71,7 @@ jobs:
       id: changelog
       uses: mikepenz/release-changelog-builder-action@v4
       with:
-        configuration: |
+        configurationJson: |
           {
             "categories": [
               {
