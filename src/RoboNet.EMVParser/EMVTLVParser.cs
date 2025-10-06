@@ -242,10 +242,14 @@ public static partial class TLVParser
         if (tagType == 31) // If first 5 bits are equal to 11111
         {
             int tagLength = 2;
-            while (tagLength < data.Length && (data[tagLength - 1] & 0x80) != 0) // Check continuation bit
+            while (tagLength <= data.Length && (data[tagLength - 1] & 0x80) != 0) // Check continuation bit
             {
                 tagLength++;
             }
+
+            if (tagLength > data.Length)
+                throw new ArgumentOutOfRangeException(nameof(data), "Invalid Tag. Tag is incomplete.");
+
             skipBytes = tagLength;
             return new Range(0, tagLength);
         }

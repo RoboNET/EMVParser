@@ -1,0 +1,122 @@
+name: Release NuGet Package
+
+on:
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'samples/**'
+      - 'LICENSE.md'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Needed for version calculation
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Configure Git
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
+    # Calculate new version based on conventional commits
+    - name: Calculate Version
+      id: version
+      uses: mathieudutour/github-tag-action@v6.2
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        default_bump: patch
+        release_branches: main
+        dry_run: true
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Create and push tag
+      run: |
+        echo "Creating version: ${{ steps.version.outputs.new_version }}"
+        git tag v${{ steps.version.outputs.new_version }}
+        git push origin v${{ steps.version.outputs.new_version }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore -p:Version=${{ steps.version.outputs.new_version }}
+
+    - name: Test
+      run: dotnet test --configuration Release --no-build --verbosity normal
+
+    - name: Pack NuGet package
+      run: dotnet pack src/RoboNet.EMVParser/RoboNet.EMVParser.csproj --configuration Release --no-build -p:Version=${{ steps.version.outputs.new_version }} --output ./nupkg
+
+    - name: Publish to NuGet
+      run: |
+        dotnet nuget push ./nupkg/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        dotnet nuget push ./nupkg/*.snupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      continue-on-error: false
+
+    - name: Generate changelog
+      id: changelog
+      uses: mikepenz/release-changelog-builder-action@v4
+      with:
+        configuration: |
+          {
+            "categories": [
+              {
+                "title": "## 🚀 Features",
+                "labels": ["feat", "feature"]
+              },
+              {
+                "title": "## 🐛 Fixes",
+                "labels": ["fix", "bug"]
+              },
+              {
+                "title": "## 🧪 Tests",
+                "labels": ["test"]
+              },
+              {
+                "title": "## 📝 Documentation",
+                "labels": ["docs"]
+              },
+              {
+                "title": "## 🔨 Other Changes",
+                "labels": []
+              }
+            ]
+          }
+        toTag: v${{ steps.version.outputs.new_version }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create GitHub Release
+      uses: ncipollo/release-action@v1
+      with:
+        tag: v${{ steps.version.outputs.new_version }}
+        name: Release v${{ steps.version.outputs.new_version }}
+        body: |
+          ## RoboNet.EMVParser v${{ steps.version.outputs.new_version }}
+
+          ${{ steps.changelog.outputs.changelog }}
+
+          ### 📦 NuGet Package
+          ```bash
+          dotnet add package RoboNet.EMVParser --version ${{ steps.version.outputs.new_version }}
+          ```
+
+          Or visit [NuGet Gallery](https://www.nuget.org/packages/RoboNet.EMVParser/${{ steps.version.outputs.new_version }})
+        artifacts: "./nupkg/*.nupkg,./nupkg/*.snupkg"
+        draft: false
+        prerelease: false
+        token: ${{ secrets.GITHUB_TOKEN }}

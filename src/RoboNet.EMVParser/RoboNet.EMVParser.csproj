@@ -8,7 +8,6 @@
         <IsPackable>true</IsPackable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <PackageId>RoboNet.EMVParser</PackageId>
-        <Version>0.8.0</Version>
         <Authors>Mikhail Korolev (RoboNet)</Authors>
         <RepositoryUrl>https://github.com/RoboNET/EMVParser.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
