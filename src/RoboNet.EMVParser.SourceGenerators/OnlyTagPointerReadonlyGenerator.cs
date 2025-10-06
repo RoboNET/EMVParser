@@ -6,23 +6,23 @@ using Microsoft.CodeAnalysis.Text;
 namespace RoboNet.EMVParser.SourceGenerators;
 
 [Generator]
-public class TagPointerReadonlyGenerator : IIncrementalGenerator
+public class OnlyTagPointerReadonlyGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext initContext)
     {
         var enumsToGenerate = initContext.SyntaxProvider
             .ForAttributeWithMetadataName(
-                "RoboNet.EMVParser.TagPointerGenerationAttribute",
+                "RoboNet.EMVParser.OnlyTagPointerGenerationAttribute",
                 predicate: (node, _) => node is ClassDeclarationSyntax,
                 transform: static (ctx, _) => ctx.SemanticModel);
         
         initContext.RegisterPostInitializationOutput(ctx => ctx.AddSource(
-            "TagPointerGenerationAttribute.g.cs",
+            "OnlyTagPointerGenerationAttribute.g.cs",
             SourceText.From(@"
 namespace RoboNet.EMVParser
 {
     [System.AttributeUsage(System.AttributeTargets.Class)]
-    public class TagPointerGenerationAttribute : System.Attribute
+    public class OnlyTagPointerGenerationAttribute : System.Attribute
     {
     }
 }", Encoding.UTF8)));
@@ -30,15 +30,15 @@ namespace RoboNet.EMVParser
         initContext.RegisterSourceOutput(enumsToGenerate, (spc, nameAndContent) =>
         {
             var readonlyTag = nameAndContent.SyntaxTree.ToString()
-                .Replace("[TagPointerGeneration]","")
-                .Replace("TagPointer", "TagPointerReadonly")
+                .Replace("[OnlyTagPointerGeneration]","")
+                .Replace("OnlyTagPointer", "OnlyTagPointerReadonly")
                 .Replace("Memory<byte>", "ReadOnlyMemory<byte>");
 
             readonlyTag = $@"#nullable enable
 {readonlyTag}
 #nullable disable";
             
-            spc.AddSource($"TagPointerReadonly.g.cs", SourceText.From(readonlyTag, Encoding.UTF8));
+            spc.AddSource($"OnlyTagPointerReadonly.g.cs", SourceText.From(readonlyTag, Encoding.UTF8));
         });
     }
 }

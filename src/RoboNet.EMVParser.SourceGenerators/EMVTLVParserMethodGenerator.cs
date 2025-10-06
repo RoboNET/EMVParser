@@ -113,7 +113,7 @@ namespace RoboNet.EMVParser
                 .Replace("new List<TagLengthPointer>()", "new List<TagLengthPointerReadonly>()")
                 .Replace("new TagLengthPointer()", "new TagLengthPointerReadonly()");
 
-            var className = (methodDeclarationSyntax.Parent as ClassDeclarationSyntax).Identifier.Text;
+            var className = (methodDeclarationSyntax.Parent as ClassDeclarationSyntax)?.Identifier.Text;
             
             var classText = $@"
 using System.Text;
