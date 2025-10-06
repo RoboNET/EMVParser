@@ -69,65 +69,24 @@ jobs:
 
     - name: Generate changelog
       id: changelog
-      uses: mikepenz/release-changelog-builder-action@v4
-      with:
-        configurationJson: |
-          {
-            "categories": [
-              {
-                "title": "## 🚀 Features",
-                "rules": [
-                  {"pattern": "^feat(\\(.+\\))?!?:", "on_property": "subject"}
-                ]
-              },
-              {
-                "title": "## 🐛 Bug Fixes",
-                "rules": [
-                  {"pattern": "^fix(\\(.+\\))?!?:", "on_property": "subject"}
-                ]
-              },
-              {
-                "title": "## 🧪 Tests",
-                "rules": [
-                  {"pattern": "^test(\\(.+\\))?!?:", "on_property": "subject"}
-                ]
-              },
-              {
-                "title": "## 📝 Documentation",
-                "rules": [
-                  {"pattern": "^docs(\\(.+\\))?!?:", "on_property": "subject"}
-                ]
-              },
-              {
-                "title": "## 🔧 Chores",
-                "rules": [
-                  {"pattern": "^chore(\\(.+\\))?!?:", "on_property": "subject"}
-                ]
-              },
-              {
-                "title": "## ♻️ Refactoring",
-                "rules": [
-                  {"pattern": "^refactor(\\(.+\\))?!?:", "on_property": "subject"}
-                ]
-              },
-              {
-                "title": "## 🔨 Other Changes",
-                "rules": [
-                  {"pattern": ".*", "on_property": "subject"}
-                ]
-              }
-            ],
-            "ignore_labels": ["ignore"],
-            "sort": "ASC",
-            "template": "${{CHANGELOG}}",
-            "pr_template": "- ${{TITLE}} (#${{NUMBER}})",
-            "commit_template": "- ${{TITLE}}",
-            "empty_template": "- No changes",
-            "trim_values": true
-          }
-        toTag: v${{ steps.version.outputs.new_version }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Get the previous tag
+        PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+        if [ -z "$PREV_TAG" ]; then
+          # No previous tag, get all commits
+          CHANGELOG=$(git log --pretty=format:"- %s (%h)" --reverse)
+        else
+          # Get commits since previous tag
+          CHANGELOG=$(git log ${PREV_TAG}..HEAD --pretty=format:"- %s (%h)" --reverse)
+        fi
+
+        # Save to output
+        echo "changelog<<EOF" >> $GITHUB_OUTPUT
+        echo "## 📝 Changes" >> $GITHUB_OUTPUT
+        echo "" >> $GITHUB_OUTPUT
+        echo "$CHANGELOG" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
 
     - name: Create GitHub Release
       uses: ncipollo/release-action@v1
