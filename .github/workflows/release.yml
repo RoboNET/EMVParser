@@ -43,6 +43,13 @@ jobs:
       with:
         dotnet-version: 9.0.x
 
+    - name: Get previous tag for changelog
+      id: prev_tag
+      run: |
+        PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+        echo "prev_tag=$PREV_TAG" >> $GITHUB_OUTPUT
+        echo "Previous tag: $PREV_TAG"
+
     - name: Create and push tag
       run: |
         echo "Creating version: ${{ steps.version.outputs.new_version }}"
@@ -70,15 +77,17 @@ jobs:
     - name: Generate changelog
       id: changelog
       run: |
-        # Get the previous tag
-        PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+        # Use the previous tag from earlier step
+        PREV_TAG="${{ steps.prev_tag.outputs.prev_tag }}"
 
         if [ -z "$PREV_TAG" ]; then
           # No previous tag, get all commits
           CHANGELOG=$(git log --pretty=format:"- %s (%h)" --reverse)
+          echo "No previous tag found, listing all commits"
         else
           # Get commits since previous tag
           CHANGELOG=$(git log ${PREV_TAG}..HEAD --pretty=format:"- %s (%h)" --reverse)
+          echo "Getting commits since $PREV_TAG"
         fi
 
         # Save to output
